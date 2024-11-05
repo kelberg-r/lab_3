@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Data</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>View Data</h1>
+    <form id="viewDataForm">
+        <select id="tableSelect">
+            <option value="Resources">Resources</option>
+            <option value="Products">Products</option>
+            <option value="Orders">Orders</option>
+            <option value="OrderDetails">Order Details</option>
+            <option value="TechMap">Tech Map</option>
+            <option value="Sales">Sales</option>
+            <option value="SaleDetails">Sale Details</option>
+        </select>
+        <button type="button" onclick="fetchTableData()">View Table</button>
+    </form>
+
+    <div id="table-data"></div>
+
+    <script>
+        function fetchTableData() {
+            const tableName = document.getElementById('tableSelect').value;
+            fetch(`/view_table/${tableName}`)
+                .then(response => response.json())
+                .then(data => {
+                    const tableDataDiv = document.getElementById('table-data');
+                    tableDataDiv.innerHTML = '';
+
+                    if (data.length === 0) {
+                        tableDataDiv.innerHTML = '<p>No data found.</p>';
+                        return;
+                    }
+
+                    // Create table
+                    const table = document.createElement('table');
+                    table.border = '1';
+                    const headerRow = document.createElement('tr');
+                    Object.keys(data[0]).forEach(column => {
+                        const th = document.createElement('th');
+                        th.textContent = column;
+                        headerRow.appendChild(th);
+                    });
+                    table.appendChild(headerRow);
+
+                    data.forEach(row => {
+                        const dataRow = document.createElement('tr');
+                        Object.values(row).forEach(cell => {
+                            const td = document.createElement('td');
+                            td.textContent = cell;
+                            dataRow.appendChild(td);
+                        });
+                        table.appendChild(dataRow);
+                    });
+
+                    tableDataDiv.appendChild(table);
+                });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Media</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>View Media by Product ID</h1>
+    <form id="mediaForm">
+        <input type="number" id="product_id" placeholder="Enter Product ID" required>
+        <button type="button" onclick="fetchMedia()">View Media</button>
+    </form>
+
+    <div id="media-list"></div>
+
+    <script>
+        function fetchMedia() {
+            const productId = document.getElementById('product_id').value;
+            fetch(`/media/by_product/${productId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const mediaList = document.getElementById('media-list');
+                    mediaList.innerHTML = '';
+
+                    if (data.length === 0) {
+                        mediaList.innerHTML = '<p>No media found for this product.</p>';
+                        return;
+                    }
+
+                    data.forEach(media => {
+                        const mediaElement = document.createElement('div');
+                        if (media.media_type.startsWith('image')) {
+                            mediaElement.innerHTML = `<img src="/media/file/${media.media_path}" alt="Media" width="200">`;
+                        } else if (media.media_type.startsWith('video')) {
+                            mediaElement.innerHTML = `<video width="320" height="240" controls><source src="/media/file/${media.media_path}" type="${media.media_type}"></video>`;
+                        } else if (media.media_type.startsWith('audio')) {
+                            mediaElement.innerHTML = `<audio controls><source src="/media/file/${media.media_path}" type="${media.media_type}"></audio>`;
+                        }
+                        mediaList.appendChild(mediaElement);
+                    });
+                });
+        }
+    </script>
+</body>
+</html>
