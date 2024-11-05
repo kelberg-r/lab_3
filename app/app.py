@@ -14,5 +14,6 @@ app.register_blueprint(upload_bp)
 app.register_blueprint(view_data_bp)
 app.register_blueprint(media_bp)
 app.register_blueprint(products_bp)
+
 if __name__ == '__main__':
     app.run(debug=True)
